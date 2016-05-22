@@ -51,14 +51,26 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
 
 #Ubicacion de los tornillos:
 		self.ubicacionDeTornillosLayout=qt.QFormLayout(self.botonColapsableUbicacionTornillos)
+		self.insercion1Button = qt.QPushButton("")
+		self.insercion1Button.toolTip= "Al presionar este boton ubicara en la vista 3d el punto de insecion"
+		self.insercion1Button.setIcon(qt.QIcon('C:\Users\Camilo_Q\Documents\GitHub\simuladorTornillosPediculares\simuladorTornillosPedicularesWizard\Icons\Fiducials.png'))
+
+		self.anadirTornillo1Button = qt.QPushButton("")
+		self.anadirTornillo1Button.toolTip= "Al presionar este boton cargara el tornillo al espacio 3D"
+		self.anadirTornillo1Button.setIcon(qt.QIcon('C:\Users\Camilo_Q\Documents\GitHub\simuladorTornillosPediculares\simuladorTornillosPedicularesWizard\Icons\mas.png'))
+
+		self.eliminarTornillo1Button = qt.QPushButton("")
+		self.eliminarTornillo1Button.toolTip= "Al presionar este boton eliminara el tornillo al espacio 3D"
+		self.eliminarTornillo1Button.setIcon(qt.QIcon('C:\Users\Camilo_Q\Documents\GitHub\simuladorTornillosPediculares\simuladorTornillosPedicularesWizard\Icons\minus.png'))
+
 		self.seleccionTornillo1ComboBox = qt.QComboBox()
 		self.pathTornillos="C:\Users\Camilo_Q\Documents\GitHub\simuladorTornillosPediculares\simuladorTornillosPedicularesWizard\Modelos\Tornillos"
 		self.onlyfiles = [f for f in listdir(self.pathTornillos) if isfile(join(self.pathTornillos, f))] #Lista los archivos que estan dentro del path
 		for tornillo in self.onlyfiles: #Muestra en el comboBox de cursos los archivos que estan presentes en el path
 			self.seleccionTornillo1ComboBox.addItem(tornillo)
-		self.ubicacionDeTornillosLayout.addRow(self.seleccionTornillo1ComboBox)
-
-
+		
+		self.ubicacionDeTornillosLayout.addRow(self.insercion1Button,self.seleccionTornillo1ComboBox)
+		self.ubicacionDeTornillosLayout.addRow(self.anadirTornillo1Button,self.eliminarTornillo1Button)
 
   def onEntry(self, comingFrom, transitionType):
     super(ModuloPlaneacion, self).onEntry(comingFrom, transitionType)
