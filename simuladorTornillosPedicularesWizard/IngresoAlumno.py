@@ -5,7 +5,7 @@ class IngresoAlumno(ctk.ctkWorkflowWidgetStep) :
 
     def __init__(self, stepid):
         self.initialize(stepid)
-        self.setName( 'Ver actividad'  )
+        self.setName( '2. Ingreso Alumno'  )
         
     def createUserInterface(self):
 
@@ -27,5 +27,6 @@ class IngresoAlumno(ctk.ctkWorkflowWidgetStep) :
         
 
     def killButton(self):
-    	print "Holi"
+    	bl = slicer.util.findChildren(text='ModuloPlaneacion' )
+    	bl[0].hide()
 

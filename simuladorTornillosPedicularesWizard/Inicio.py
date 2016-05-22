@@ -5,7 +5,7 @@ class Inicio(ctk.ctkWorkflowWidgetStep) :
 
     def __init__(self, stepid):
         self.initialize(stepid)
-        self.setName( 'Ver actividad'  )
+        self.setName( '1. Inicio simulador insercion TTP'  )
         
     def createUserInterface(self):
 
@@ -26,5 +26,6 @@ class Inicio(ctk.ctkWorkflowWidgetStep) :
         super(Inicio, self).validate(validationSuceeded, desiredBranchId)
         
     def killButton(self):
-    	print "Holi"
+    	bl = slicer.util.findChildren(text='ModuloPlaneacion' )
+    	bl[0].hide()
 
