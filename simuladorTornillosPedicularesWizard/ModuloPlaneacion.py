@@ -8,7 +8,7 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
 
   def __init__(self, stepid):
     self.initialize(stepid)
-    self.setName( '3. Modulo Planeacion Insercion TTP'  )
+    self.setName( '4. Modulo Planeacion Insercion TTP'  )
     self.__parent = super( ModuloPlaneacion, self )
         
   def createUserInterface(self):
@@ -178,6 +178,7 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
     self.valorSlideTornillo1=0
     self.valorSlideTornillo2=0
     self.mostrarplano=0
+    slicer.mrmlScene.Clear(0)
 
   def onExit(self, goingTo, transitionType):
     super(ModuloPlaneacion, self).onExit(goingTo, transitionType)
