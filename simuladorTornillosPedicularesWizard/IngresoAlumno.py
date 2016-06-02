@@ -6,6 +6,8 @@ class IngresoAlumno(ctk.ctkWorkflowWidgetStep) :
     def __init__(self, stepid):
         self.initialize(stepid)
         self.setName( '2. Ingreso Alumno'  )
+        self.nextButtonText = 'Siguiente'
+        self.backButtonText = 'Volver'
         
     def createUserInterface(self):
 
@@ -25,7 +27,6 @@ class IngresoAlumno(ctk.ctkWorkflowWidgetStep) :
         validationSuceeded = True
         super(IngresoAlumno, self).validate(validationSuceeded, desiredBranchId)
         
-
     def killButton(self):
     	bl = slicer.util.findChildren(text='ModuloPlaneacion' )
     	bl[0].hide()

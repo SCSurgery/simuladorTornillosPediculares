@@ -5,7 +5,9 @@ class Inicio(ctk.ctkWorkflowWidgetStep) :
 
     def __init__(self, stepid):
         self.initialize(stepid)
-        self.setName( '1. Inicio simulador insercion TTP'  )
+        self.setName( u'1. Inicio simulador inserción TTP'  )
+        self.nextButtonText = 'Siguiente'
+        self.backButtonText = 'Volver'
         
     def createUserInterface(self):
 

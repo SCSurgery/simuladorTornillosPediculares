@@ -5,12 +5,18 @@ class HistoriaClinica(ctk.ctkWorkflowWidgetStep) :
 
     def __init__(self, stepid):
         self.initialize(stepid)
+        self.nextButtonText = 'Siguiente'
+        self.backButtonText = 'Volver'
         self.setName( '3. Historia clinica del caso'  )
         
     def createUserInterface(self):
 
         font =qt.QFont("Sans Serif", 12, qt.QFont.Bold)
         self.__layout = qt.QFormLayout( self )
+
+        self.labelInstruccionesDeUsoBienvenido = qt.QLabel("Historia Clinica: \n\nEl paciente presenta ...")
+        self.labelInstruccionesDeUsoBienvenido.setFont(font)
+        self.__layout.addRow(self.labelInstruccionesDeUsoBienvenido)
         
     
     def onEntry(self, comingFrom, transitionType):
