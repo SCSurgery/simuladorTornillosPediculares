@@ -8,11 +8,22 @@ class IngresoAlumno(ctk.ctkWorkflowWidgetStep) :
         self.setName( '2. Ingreso Alumno'  )
         self.nextButtonText = 'Siguiente'
         self.backButtonText = 'Volver'
+        self.__parent = super( IngresoAlumno, self )
         
     def createUserInterface(self):
 
         font =qt.QFont("Sans Serif", 12, qt.QFont.Bold)
+       
+        self.__layout = self.__parent.createUserInterface()
         self.__layout = qt.QFormLayout( self )
+        loader = qt.QUiLoader()
+        path='C:\Users\Camilo_Q\Documents\GitHub\simuladorTornillosPediculares\Interfaz Grafica\Registro.ui'
+        qfile = qt.QFile(path)
+        qfile.open(qt.QFile.ReadOnly)
+        widget = loader.load(qfile)
+        self.widget = widget
+        self.__layout.addWidget(widget)
+        self.widget.setMRMLScene(slicer.mrmlScene)
     
     def onEntry(self, comingFrom, transitionType):
         super(IngresoAlumno, self).onEntry(comingFrom, transitionType)

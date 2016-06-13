@@ -160,6 +160,12 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
 
         self.manipulacionTornillosLayout.addRow(self.comboBoxSeleccionTornillo)
         self.manipulacionTornillosLayout.addRow(self.manipulacionTornillosLayoutContenedor)
+        self.fijarTornillos= qt.QPushButton('Fijar Tornillos')
+        self.fijarTornillos.connect('clicked(bool)',self.onApplyFijarTornillos)
+        self.manipulacionTornillosLayout.addRow(self.fijarTornillos)
+
+
+
 
   def onEntry(self, comingFrom, transitionType):
     super(ModuloPlaneacion, self).onEntry(comingFrom, transitionType)
@@ -235,7 +241,31 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
     camera.SetViewAngle(30) 
     cameraNode.ResetClippingRange() 
     slicer.util.resetSliceViews()
+    
     self.threeDView.setDisabled(True)
+    sliceNode = slicer.util.getNode('vtkMRMLSliceNodeRed')
+    sliceNode.SetOrientationToReformat()
+    mtslide = vtk.vtkMatrix4x4()
+    mtslide.SetElement(0,0,0.550523)
+    mtslide.SetElement(0,1,0)
+    mtslide.SetElement(0,2,0)
+    mtslide.SetElement(0,3,-82.5784)
+    mtslide.SetElement(1,0,0)
+    mtslide.SetElement(1,1,0.550523)
+    mtslide.SetElement(1,2,0)
+    mtslide.SetElement(0,3,-79)
+    mtslide.SetElement(2,0,0)
+    mtslide.SetElement(2,1,0)
+    mtslide.SetElement(2,2,1.4002)
+    mtslide.SetElement(0,3,0)
+
+    sliceNode.SetSliceToRAS(mtslide)
+
+    self.layoutManager= slicer.app.layoutManager()
+    gw = self.layoutManager.sliceWidget('Red')
+    gNode = gw.sliceLogic()
+    gNode.FitSliceToAll() 
+
 
   def iniciarFiducials(self):
         self.referenciasTornillo1=slicer.vtkMRMLMarkupsFiducialNode()
@@ -244,6 +274,8 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
         self.referenciasTornillo2.SetName("Fiducials Tornillo 2")
         slicer.mrmlScene.AddNode(self.referenciasTornillo2)
         slicer.mrmlScene.AddNode(self.referenciasTornillo1)
+
+
 
   def onApplyReniciarTodo(self):
         try:
@@ -282,6 +314,8 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
         self.valorSlideTornillo2=0
         sliceNode = slicer.util.getNode('vtkMRMLSliceNodeGreen')
         sliceNode.SetSliceVisible(False)
+        referencias1.SetLocked(0)
+        referencias2.SetLocked(0)
 
   def onApplyRegla(self):
         
@@ -392,7 +426,7 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
 
         self.anadirTornillo2Button.setEnabled(False)
         self.botonColapsableManipulacionTornillos.setEnabled(True)
-        self.labelInstruccionesDeUsoInstruccion.setText("5. Manipule el tornillos e insertelos")
+        self.labelInstruccionesDeUsoInstruccion.setText("5. Manipule el tornillo #1 e insertelo")
 
         self.pathTornillos = 'C:\Users\Camilo_Q\Documents\GitHub\simuladorTornillosPediculares\simuladorTornillosPedicularesWizard\Modelos\Tornillos/'+self.nombreTornillo2+".STL"
         slicer.util.loadModel(self.pathTornillos)
@@ -463,6 +497,14 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
         self.insercion2Button.setEnabled(True)
         self.tornillo2 = None
         self.valorSlideTornillo2=0
+
+  def onApplyFijarTornillos(self):
+        referencias1 = slicer.util.getNode("Fiducials Tornillo 1")
+        referencias2 = slicer.util.getNode("Fiducials Tornillo 2")
+        referencias1.SetLocked(1)
+        referencias2.SetLocked(1)
+        self.botonColapsableManipulacionTornillos.setEnabled(False)
+        print "Fijados"
 
   def setTransformOrigin(self,target,transformadaNode): #Funcion encargada del desplazamiento
 
@@ -578,12 +620,14 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
         self.barraTranslacionEjeTornillo.setValue(self.valorSlideTornillo1)
         referencias1.SetLocked(0)
         referencias2.SetLocked(1)
+        self.labelInstruccionesDeUsoInstruccion.setText("5. Manipule el tornillo #1 e insertelo")
     else: 
         referencias2 = slicer.util.getNode("Fiducials Tornillo 2")
         referencias1 = slicer.util.getNode("Fiducials Tornillo 1")
         self.barraTranslacionEjeTornillo.setValue(self.valorSlideTornillo2)
         referencias2.SetLocked(0)
         referencias1.SetLocked(1)
+        self.labelInstruccionesDeUsoInstruccion.setText("5. Manipule el tornillo #2 e insertelo")
 
   def onMoveTraslacionEjeTornillo(self):
     valorTrasladoSlidex =self.barraTranslacionEjeTornillo.value
