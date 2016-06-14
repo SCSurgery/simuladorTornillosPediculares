@@ -34,7 +34,7 @@ class simuladorTornillosPedicularesWidget:
   def setup(self):
     #Se establecen los pasos del flujo de trabajo
     self.StepInicio=simuladorTornillosPedicularesWizard.Inicio('Inicio')
-    self.StepIngresoAlumno=simuladorTornillosPedicularesWizard.IngresoAlumno('IngresoAlumno')
+    self.StepRegistro=simuladorTornillosPedicularesWizard.IngresoAlumno('IngresoAlumno')
     self.StepHistoriaClinica=simuladorTornillosPedicularesWizard.HistoriaClinica('HistoriaClinica')
     self.StepModuloPlaneacion=simuladorTornillosPedicularesWizard.ModuloPlaneacion('ModuloPlaneacion')
 
@@ -48,8 +48,8 @@ class simuladorTornillosPedicularesWidget:
     workflowWidget.setWorkflow(self.workflow)
 
     #Se definen las transiciones entre los pasos del flujo de trabajo
-    self.workflow.addTransition(self.StepInicio, self.StepIngresoAlumno)
-    self.workflow.addTransition(self.StepIngresoAlumno, self.StepHistoriaClinica)
+    self.workflow.addTransition(self.StepInicio, self.StepRegistro,'1', ctk.ctkWorkflow.Bidirectional )
+    self.workflow.addTransition(self.StepInicio, self.StepHistoriaClinica,'2', ctk.ctkWorkflow.Bidirectional )
     self.workflow.addTransition(self.StepHistoriaClinica, self.StepModuloPlaneacion)
 
     self.workflow.start()

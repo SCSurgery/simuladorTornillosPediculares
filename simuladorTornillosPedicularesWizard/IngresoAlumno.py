@@ -47,7 +47,9 @@ class IngresoAlumno(ctk.ctkWorkflowWidgetStep) :
         
     def killButton(self):
     	bl = slicer.util.findChildren(text='ModuloPlaneacion' )
-    	bl[0].hide()
+        b2 = slicer.util.findChildren(text='IngresoAlumno' )
+        bl[0].hide()
+        b2[0].hide()
 
     def findWidget(self,widget,objectName):
         if widget.objectName == objectName:

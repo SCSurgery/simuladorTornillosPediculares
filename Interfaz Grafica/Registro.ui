@@ -196,6 +196,12 @@ p, li { white-space: pre-wrap; }
      <property name="text">
       <string>Profesor</string>
      </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroup</string>
+     </attribute>
     </widget>
    </item>
    <item>
@@ -208,6 +214,9 @@ p, li { white-space: pre-wrap; }
      <property name="text">
       <string>Estudiante</string>
      </property>
+     <attribute name="buttonGroup">
+      <string notr="true">buttonGroup</string>
+     </attribute>
     </widget>
    </item>
    <item>
@@ -274,4 +283,7 @@ p, li { white-space: pre-wrap; }
  </tabstops>
  <resources/>
  <connections/>
+ <buttongroups>
+  <buttongroup name="buttonGroup"/>
+ </buttongroups>
 </ui>

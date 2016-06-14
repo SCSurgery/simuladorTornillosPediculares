@@ -41,12 +41,24 @@ class Inicio(ctk.ctkWorkflowWidgetStep) :
         
     
     def validate(self, desiredBranchId):
-        validationSuceeded = True
-        super(Inicio, self).validate(validationSuceeded, desiredBranchId)
+        
+        if self.profesorCheckBox.isChecked():
+            desiredBranchId = '2'
+            super(Inicio, self).validate(True, desiredBranchId)
+        elif self.estudianteCheckBox.isChecked():
+            desiredBranchId = '2'
+            super(Inicio, self).validate(True, desiredBranchId)
+        elif self.eresNuevoCheckBox.isChecked():
+            desiredBranchId = '1'
+            super(Inicio, self).validate(True, desiredBranchId)
+        else:
+            qt.QMessageBox.critical(slicer.util.mainWindow(),'Error de registro', 'Intente de nuevo')
         
     def killButton(self):
     	bl = slicer.util.findChildren(text='ModuloPlaneacion' )
+        b2 = slicer.util.findChildren(text='IngresoAlumno' )
     	bl[0].hide()
+        b2[0].hide()
 
     def findWidget(self,widget,objectName):
         if widget.objectName == objectName:
