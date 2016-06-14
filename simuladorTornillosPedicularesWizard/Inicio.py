@@ -51,8 +51,7 @@ class Inicio(ctk.ctkWorkflowWidgetStep) :
         elif self.eresNuevoCheckBox.isChecked():
             desiredBranchId = '1'
             super(Inicio, self).validate(True, desiredBranchId)
-        else:
-            qt.QMessageBox.critical(slicer.util.mainWindow(),'Error de registro', 'Intente de nuevo')
+        
         
     def killButton(self):
     	bl = slicer.util.findChildren(text='ModuloPlaneacion' )

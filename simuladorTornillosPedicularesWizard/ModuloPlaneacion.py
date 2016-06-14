@@ -164,8 +164,7 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
         self.fijarTornillos.connect('clicked(bool)',self.onApplyFijarTornillos)
         self.manipulacionTornillosLayout.addRow(self.fijarTornillos)
 
-
-
+        self.copiar3D()
 
   def onEntry(self, comingFrom, transitionType):
     super(ModuloPlaneacion, self).onEntry(comingFrom, transitionType)
@@ -733,3 +732,29 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
             bounds[5] = center[2] + dimensions[2] / 2;
             
             return bounds
+  
+  def copiar3D(self):
+        qDesktopW = qt.QDesktopWidget()
+        t = slicer.qMRMLThreeDView()
+        t.setWindowTitle('3D')
+
+        if qDesktopW.screenCount == 2:
+            qRect2 = qDesktopW.screenGeometry(1)
+            t.setGeometry(qRect2)
+            t.show()
+            t.setMRMLScene(slicer.mrmlScene)
+            t.forceRender()
+            n = slicer.util.getNode('*View*')
+            t.setMRMLViewNode(n)
+        elif qDesktopW.screenCount == 1:
+            t.close()
+            print "Se desconectó la segunda pantalla"
+
+        #Copiar la vista 3D con opciones de configuracion
+        o = slicer.qMRMLThreeDWidget()
+        o.setWindowTitle('3D')
+        
+        o.setMRMLScene(slicer.mrmlScene)
+        #o.forceRender()
+        n = slicer.util.getNode('*View*')
+        o.setMRMLViewNode(n)
