@@ -96,7 +96,7 @@ p, li { white-space: pre-wrap; }
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QLineEdit" name="ReferenciaImagenTexto">
+        <widget class="QLineEdit" name="contrasenaEditText">
          <property name="enabled">
           <bool>true</bool>
          </property>
@@ -116,13 +116,16 @@ p, li { white-space: pre-wrap; }
          <property name="cursor">
           <cursorShape>BlankCursor</cursorShape>
          </property>
+         <property name="echoMode">
+          <enum>QLineEdit::Password</enum>
+         </property>
          <property name="readOnly">
           <bool>false</bool>
          </property>
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QLineEdit" name="ReferenciaPacienteTexto">
+        <widget class="QLineEdit" name="nombreEditText">
          <property name="enabled">
           <bool>true</bool>
          </property>
@@ -154,7 +157,11 @@ p, li { white-space: pre-wrap; }
         </widget>
        </item>
        <item row="2" column="1">
-        <widget class="QLineEdit" name="lineEdit"/>
+        <widget class="QLineEdit" name="repetirContrasenaEditText">
+         <property name="echoMode">
+          <enum>QLineEdit::Password</enum>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
@@ -180,7 +187,7 @@ p, li { white-space: pre-wrap; }
     </spacer>
    </item>
    <item>
-    <widget class="QCheckBox" name="checkBox">
+    <widget class="QCheckBox" name="profesorCheckBox">
      <property name="font">
       <font>
        <pointsize>12</pointsize>
@@ -192,7 +199,7 @@ p, li { white-space: pre-wrap; }
     </widget>
    </item>
    <item>
-    <widget class="QCheckBox" name="checkBox_2">
+    <widget class="QCheckBox" name="estudianteCheckBox">
      <property name="font">
       <font>
        <pointsize>12</pointsize>
@@ -222,7 +229,7 @@ p, li { white-space: pre-wrap; }
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="registrarPushButton">
        <property name="font">
         <font>
          <pointsize>12</pointsize>
@@ -262,8 +269,8 @@ p, li { white-space: pre-wrap; }
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>ReferenciaPacienteTexto</tabstop>
-  <tabstop>ReferenciaImagenTexto</tabstop>
+  <tabstop>nombreEditText</tabstop>
+  <tabstop>contrasenaEditText</tabstop>
  </tabstops>
  <resources/>
  <connections/>

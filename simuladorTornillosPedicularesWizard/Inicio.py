@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 from __main__ import vtk, qt, ctk, slicer
 
+
 class Inicio(ctk.ctkWorkflowWidgetStep) :
 
     def __init__(self, stepid):
@@ -23,7 +24,13 @@ class Inicio(ctk.ctkWorkflowWidgetStep) :
         self.widget = widget
         self.__layout.addWidget(widget)
         self.widget.setMRMLScene(slicer.mrmlScene)
-    
+        
+        self.nombreEditText = self.findWidget(self.widget,'nombreEditText')
+        self.contrasenaEditText = self.findWidget(self.widget,'contrasenaEditText')
+        self.profesorCheckBox = self.findWidget(self.widget,'profesorCheckBox')
+        self.estudianteCheckBox = self.findWidget(self.widget,'estudianteCheckBox')
+        self.eresNuevoCheckBox = self.findWidget(self.widget,'eresNuevoCheckBox')
+
     def onEntry(self, comingFrom, transitionType):
         super(Inicio, self).onEntry(comingFrom, transitionType)
         self.ctimer = qt.QTimer()
@@ -41,3 +48,15 @@ class Inicio(ctk.ctkWorkflowWidgetStep) :
     	bl = slicer.util.findChildren(text='ModuloPlaneacion' )
     	bl[0].hide()
 
+    def findWidget(self,widget,objectName):
+        if widget.objectName == objectName:
+            return widget
+        else:
+            children = []
+            for w in widget.children():
+                resulting_widget = self.findWidget(w, objectName)
+                if resulting_widget:
+                    return resulting_widget
+            return None
+
+    

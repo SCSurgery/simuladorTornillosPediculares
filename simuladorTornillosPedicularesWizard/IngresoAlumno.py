@@ -24,6 +24,13 @@ class IngresoAlumno(ctk.ctkWorkflowWidgetStep) :
         self.widget = widget
         self.__layout.addWidget(widget)
         self.widget.setMRMLScene(slicer.mrmlScene)
+
+        self.nombreEditText = self.findWidget(self.widget,'nombreEditText')
+        self.contrasenaEditText = self.findWidget(self.widget,'contrasenaEditText')
+        self.repetirContrasenaEditText = self.findWidget(self.widget,'repetirContrasenaEditText')
+        self.profesorCheckBox = self.findWidget(self.widget,'profesorCheckBox')
+        self.estudianteCheckBox = self.findWidget(self.widget,'estudianteCheckBox')
+        self.registrarPushButton = self.findWidget(self.widget,'registrarPushButton')
     
     def onEntry(self, comingFrom, transitionType):
         super(IngresoAlumno, self).onEntry(comingFrom, transitionType)
@@ -41,4 +48,15 @@ class IngresoAlumno(ctk.ctkWorkflowWidgetStep) :
     def killButton(self):
     	bl = slicer.util.findChildren(text='ModuloPlaneacion' )
     	bl[0].hide()
+
+    def findWidget(self,widget,objectName):
+        if widget.objectName == objectName:
+            return widget
+        else:
+            children = []
+            for w in widget.children():
+                resulting_widget = self.findWidget(w, objectName)
+                if resulting_widget:
+                    return resulting_widget
+            return None
 
