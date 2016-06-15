@@ -1,5 +1,7 @@
 # -*- coding: UTF-8 -*-
 from __main__ import vtk, qt, ctk, slicer
+import mysql.connector
+import sys
 
 
 class Inicio(ctk.ctkWorkflowWidgetStep) :
@@ -31,6 +33,9 @@ class Inicio(ctk.ctkWorkflowWidgetStep) :
         self.estudianteCheckBox = self.findWidget(self.widget,'estudianteCheckBox')
         self.eresNuevoCheckBox = self.findWidget(self.widget,'eresNuevoCheckBox')
 
+        self.nombreEditText.textChanged.connect(self.textchanged1)
+        self.contrasenaEditText.textChanged.connect(self.textchanged2)
+
     def onEntry(self, comingFrom, transitionType):
         super(Inicio, self).onEntry(comingFrom, transitionType)
         self.ctimer = qt.QTimer()
@@ -41,13 +46,31 @@ class Inicio(ctk.ctkWorkflowWidgetStep) :
         
     
     def validate(self, desiredBranchId):
-        
+        con=mysql.connector.connect(user="root",password="root",host="127.0.0.1",database="basedatos_simulador_ttp")
+        cursor=con.cursor()
+        sys.argv=["indice"]
         if self.profesorCheckBox.isChecked():
             desiredBranchId = '2'
-            super(Inicio, self).validate(True, desiredBranchId)
+            super(Inicio, self).validate(False, desiredBranchId)
         elif self.estudianteCheckBox.isChecked():
-            desiredBranchId = '2'
-            super(Inicio, self).validate(True, desiredBranchId)
+            ingreso=0;
+            estudiantes = []
+            cursor.execute("SELECT * FROM estudiantes")
+            rows = cursor.fetchall()
+            for row in rows:
+                estudiantes.append(row)
+            for i in range (0,len(estudiantes)):
+                if (self.name == estudiantes[i][1] and self.contra == str(estudiantes[i][2])):
+                    print "Encontrado"
+                    desiredBranchId = '2'
+                    super(Inicio, self).validate(True, desiredBranchId)
+                    ingreso=1
+                    sys.argv[0]=str(estudiante[i][0])
+                    print sys.argv[0]
+
+            if ingreso==0:
+                qt.QMessageBox.warning(slicer.util.mainWindow(),'Error Login', u'Usuario y/o contraseña invalidos')
+                super(Inicio, self).validate(False, desiredBranchId)
         elif self.eresNuevoCheckBox.isChecked():
             desiredBranchId = '1'
             super(Inicio, self).validate(True, desiredBranchId)
@@ -70,4 +93,8 @@ class Inicio(ctk.ctkWorkflowWidgetStep) :
                     return resulting_widget
             return None
 
-    
+    def textchanged1(self,text):
+        self.name = str(text)
+        
+    def textchanged2(self,text):
+        self.contra = str(text)

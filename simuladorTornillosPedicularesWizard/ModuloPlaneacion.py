@@ -755,6 +755,6 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
         o.setWindowTitle('3D')
         
         o.setMRMLScene(slicer.mrmlScene)
-        #o.forceRender()
+        o.forceRender()
         n = slicer.util.getNode('*View*')
         o.setMRMLViewNode(n)
