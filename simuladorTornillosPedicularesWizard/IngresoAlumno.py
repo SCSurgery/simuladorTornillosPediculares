@@ -92,8 +92,8 @@ class IngresoAlumno(ctk.ctkWorkflowWidgetStep) :
                             Nombre=str(self.name)
                             Contrasena=str(self.contra)
                             add_produto = """INSERT INTO estudiantes(idEstudiantes,
-                                            Nombre_Estudiante,Contasena_Estudiante)
-                                            VALUES ('%s','%s','%s')"""% (estudianteid,Nombre,Contrasena)
+                                            Nombre_Estudiante,Contasena_Estudiante,Tornillo_1,Tornillo_2,Transformada_Tornillo1,Transformada_Tornilo2)
+                                            VALUES ('%s','%s','%s','a','a','1','1')"""% (estudianteid,Nombre,Contrasena)
 
                             cursor.execute(add_produto)
                             con.commit()

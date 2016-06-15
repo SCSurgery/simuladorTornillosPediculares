@@ -4,6 +4,7 @@ from os import listdir
 from os.path import isfile, join
 import numpy,math
 import sys
+import mysql.connector
 
 class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
 
@@ -509,10 +510,9 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
         referencias2 = slicer.util.getNode("Fiducials Tornillo 2")
         referencias1.SetLocked(1)
         referencias2.SetLocked(1)
-        self.botonColapsableManipulacionTornillos.setEnabled(False)
+        self.botonColapsableManipulacionTornillos.setEnabled(True)
         self.botonGuardar.setEnabled(True)
         
-
   def onApplyGuargar(self):
         vectortornillo1=[]
         vectortornillo2=[]
@@ -526,12 +526,12 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
         mt = vtk.vtkMatrix4x4() 
         transformadaNode.GetMatrixTransformToParent(mt)
         vectortornillo2=[mt.GetElement(0,0),mt.GetElement(0,1),mt.GetElement(0,2),mt.GetElement(0,3),mt.GetElement(1,0),mt.GetElement(1,1),mt.GetElement(1,2),mt.GetElement(1,3),mt.GetElement(2,0),mt.GetElement(2,1),mt.GetElement(2,2),mt.GetElement(2,2)] 
-        print sys.argv[0]
-        print sys.argv[1]
-        print Tornillo1
-        print Tornillo2
-        print vectortornillo1
-        print vectortornillo2
+        con=mysql.connector.connect(user="root",password="root",host="127.0.0.1",database="basedatos_simulador_ttp") #Se conecta a la base de datos
+        cursor=con.cursor()
+        add_produto = """UPDATE `basedatos_simulador_ttp`.`estudiantes` SET `Tornillo_1`='%s', `Tornillo_2`='%s', `Transformada_Tornillo1`='%s', `Transformada_Tornilo2`='%s' WHERE `idEstudiantes`='%s'"""% (Tornillo1,Tornillo2,str(vectortornillo1),str(vectortornillo2),int(sys.argv[0]))
+        cursor.execute(add_produto)
+        con.commit()
+        con.close()
 
   def setTransformOrigin(self,target,transformadaNode): #Funcion encargada del desplazamiento
 
