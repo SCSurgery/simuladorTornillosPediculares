@@ -35,7 +35,9 @@ class HistoriaClinica(ctk.ctkWorkflowWidgetStep) :
         
     def killButton(self):
     	bl = slicer.util.findChildren(text='ModuloPlaneacion' )
-    	bl[0].hide()
+        b2 = slicer.util.findChildren(text='IngresoAlumno' )
+        bl[0].hide()
+        b2[0].hide()
 
     def cargarScene(self):
         path2='C:\Users\Camilo_Q\Documents\GitHub\simuladorTornillosPediculares\simuladorTornillosPedicularesWizard\Modelos\Lumbar 2.5 B31s - 4/4 Lumbar  2.5  B31s.nrrd'

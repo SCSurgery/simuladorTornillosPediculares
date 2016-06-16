@@ -3,10 +3,10 @@ from __main__ import vtk, qt, ctk, slicer
 import mysql.connector
 import sys
 
-
 class Inicio(ctk.ctkWorkflowWidgetStep) :
 
     def __init__(self, stepid):
+        
         self.initialize(stepid)
         self.setName( u'1. Inicio simulador inserción TTP'  )
         self.nextButtonText = 'Siguiente'
@@ -37,21 +37,35 @@ class Inicio(ctk.ctkWorkflowWidgetStep) :
         self.contrasenaEditText.textChanged.connect(self.textchanged2)
 
     def onEntry(self, comingFrom, transitionType):
+        slicer.mrmlScene.Clear(0)
         super(Inicio, self).onEntry(comingFrom, transitionType)
         self.ctimer = qt.QTimer()
         self.ctimer.singleShot(0, self.killButton)
 
     def onExit(self, goingTo, transitionType):
         super(Inicio, self).onExit(goingTo, transitionType)
-        
-    
+         
     def validate(self, desiredBranchId):
         con=mysql.connector.connect(user="root",password="root",host="127.0.0.1",database="basedatos_simulador_ttp")
         cursor=con.cursor()
-        sys.argv=["indice"]
+        sys.argv=["indice","Nombre","Contrasena"]
         if self.profesorCheckBox.isChecked():
             desiredBranchId = '2'
-            super(Inicio, self).validate(False, desiredBranchId)
+            ingreso=0;
+            profesores = []
+            cursor.execute("SELECT * FROM profesores")
+            rows = cursor.fetchall()
+            for row in rows:
+                profesores.append(row)
+            for i in range (0,len(profesores)):
+                if (self.name == profesores[i][1] and self.contra == str(profesores[i][2])):
+                    print "Encontrado"
+                    desiredBranchId = '2'
+                    super(Inicio, self).validate(True, desiredBranchId)
+                    ingreso=1
+            if ingreso==0:
+                qt.QMessageBox.warning(slicer.util.mainWindow(),'Error Login', u'Usuario y/o contraseña invalidos')
+                super(Inicio, self).validate(False, desiredBranchId)
         elif self.estudianteCheckBox.isChecked():
             ingreso=0;
             estudiantes = []
@@ -65,17 +79,17 @@ class Inicio(ctk.ctkWorkflowWidgetStep) :
                     desiredBranchId = '2'
                     super(Inicio, self).validate(True, desiredBranchId)
                     ingreso=1
-                    sys.argv[0]=str(estudiante[i][0])
+                    sys.argv[0]=str(estudiantes[i][0])
+                    sys.argv[1]=self.name
+                    sys.argv[2]=str(estudiantes[i][2])
                     print sys.argv[0]
-
             if ingreso==0:
                 qt.QMessageBox.warning(slicer.util.mainWindow(),'Error Login', u'Usuario y/o contraseña invalidos')
                 super(Inicio, self).validate(False, desiredBranchId)
         elif self.eresNuevoCheckBox.isChecked():
             desiredBranchId = '1'
             super(Inicio, self).validate(True, desiredBranchId)
-        
-        
+
     def killButton(self):
     	bl = slicer.util.findChildren(text='ModuloPlaneacion' )
         b2 = slicer.util.findChildren(text='IngresoAlumno' )

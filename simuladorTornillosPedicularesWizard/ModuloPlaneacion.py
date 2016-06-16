@@ -3,6 +3,7 @@ from __main__ import vtk, qt, ctk, slicer
 from os import listdir
 from os.path import isfile, join
 import numpy,math
+import sys
 
 class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
 
@@ -164,6 +165,10 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
         self.fijarTornillos.connect('clicked(bool)',self.onApplyFijarTornillos)
         self.manipulacionTornillosLayout.addRow(self.fijarTornillos)
 
+        self.botonGuardar= qt.QPushButton('Guardar')
+        self.botonGuardar.connect('clicked(bool)',self.onApplyGuargar)
+        self.manipulacionTornillosLayout.addRow(self.botonGuardar)
+
         self.copiar3D()
 
   def onEntry(self, comingFrom, transitionType):
@@ -187,6 +192,7 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
     self.valorSlideTornillo1=0
     self.valorSlideTornillo2=0
     self.mostrarplano=0
+    self.botonGuardar.setEnabled(False)
     
   def onExit(self, goingTo, transitionType):
     super(ModuloPlaneacion, self).onExit(goingTo, transitionType)
@@ -197,7 +203,9 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
         
   def killButton(self):
     bl = slicer.util.findChildren(text='ModuloPlaneacion' )
+    b2 = slicer.util.findChildren(text='IngresoAlumno' )
     bl[0].hide()
+    b2[0].hide()
 
   def cargarScene(self):
 
@@ -274,8 +282,6 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
         slicer.mrmlScene.AddNode(self.referenciasTornillo2)
         slicer.mrmlScene.AddNode(self.referenciasTornillo1)
 
-
-
   def onApplyReniciarTodo(self):
         try:
             selflicer.mrmlScene.RemoveNode(self.tornillo1)
@@ -307,6 +313,7 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
         self.eliminarTornillo1Button.setEnabled(False)
         self.eliminarTornillo2Button.setEnabled(False)
         self.botonColapsableManipulacionTornillos.setEnabled(False)
+        self.botonGuardar.setEnabled(False)
         self.tornillo1 = None
         self.tornillo2 = None
         self.valorSlideTornillo1=0
@@ -503,7 +510,28 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
         referencias1.SetLocked(1)
         referencias2.SetLocked(1)
         self.botonColapsableManipulacionTornillos.setEnabled(False)
-        print "Fijados"
+        self.botonGuardar.setEnabled(True)
+        
+
+  def onApplyGuargar(self):
+        vectortornillo1=[]
+        vectortornillo2=[]
+        Tornillo1=self.seleccionTornillo1ComboBox.currentText
+        Tornillo2=self.seleccionTornillo2ComboBox.currentText
+        transformadaNode=slicer.util.getNode('Transformada Tornillo 1')
+        mt = vtk.vtkMatrix4x4() 
+        transformadaNode.GetMatrixTransformToParent(mt)
+        vectortornillo1=[mt.GetElement(0,0),mt.GetElement(0,1),mt.GetElement(0,2),mt.GetElement(0,3),mt.GetElement(1,0),mt.GetElement(1,1),mt.GetElement(1,2),mt.GetElement(1,3),mt.GetElement(2,0),mt.GetElement(2,1),mt.GetElement(2,2),mt.GetElement(2,2)] 
+        transformadaNode=slicer.util.getNode('Transformada Tornillo 2')
+        mt = vtk.vtkMatrix4x4() 
+        transformadaNode.GetMatrixTransformToParent(mt)
+        vectortornillo2=[mt.GetElement(0,0),mt.GetElement(0,1),mt.GetElement(0,2),mt.GetElement(0,3),mt.GetElement(1,0),mt.GetElement(1,1),mt.GetElement(1,2),mt.GetElement(1,3),mt.GetElement(2,0),mt.GetElement(2,1),mt.GetElement(2,2),mt.GetElement(2,2)] 
+        print sys.argv[0]
+        print sys.argv[1]
+        print Tornillo1
+        print Tornillo2
+        print vectortornillo1
+        print vectortornillo2
 
   def setTransformOrigin(self,target,transformadaNode): #Funcion encargada del desplazamiento
 
