@@ -60,7 +60,7 @@ class Inicio(ctk.ctkWorkflowWidgetStep) :
             for i in range (0,len(profesores)):
                 if (self.name == profesores[i][1] and self.contra == str(profesores[i][2])):
                     print "Encontrado"
-                    desiredBranchId = '2'
+                    desiredBranchId = '3'
                     super(Inicio, self).validate(True, desiredBranchId)
                     ingreso=1
             if ingreso==0:
@@ -93,8 +93,10 @@ class Inicio(ctk.ctkWorkflowWidgetStep) :
     def killButton(self):
     	bl = slicer.util.findChildren(text='ModuloPlaneacion' )
         b2 = slicer.util.findChildren(text='IngresoAlumno' )
-    	bl[0].hide()
+        b3 = slicer.util.findChildren(text='MenuProfesor')
+        bl[0].hide()
         b2[0].hide()
+        b3[0].hide()
 
     def findWidget(self,widget,objectName):
         if widget.objectName == objectName:
