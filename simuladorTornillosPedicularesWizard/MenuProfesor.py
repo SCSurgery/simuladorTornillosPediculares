@@ -48,6 +48,7 @@ class MenuProfesor(ctk.ctkWorkflowWidgetStep) :
         self.cargarScene()
         self.contadorTornillos1=0
         self.contadorTornillos2=0
+        self.tornillo1=None
 
 
 
@@ -81,7 +82,7 @@ class MenuProfesor(ctk.ctkWorkflowWidgetStep) :
                     return resulting_widget
 
     def onApplyCargar(self):
-        print "Cargar"
+        
         self.nombre=self.seleccionDeEstudianteComboBox.currentText
         con=mysql.connector.connect(user="root",password="root",host="127.0.0.1",database="basedatos_simulador_ttp")
         cursor=con.cursor()
@@ -106,7 +107,6 @@ class MenuProfesor(ctk.ctkWorkflowWidgetStep) :
         nombreTornillo2=self.tornillo_2
         nombreTornillo2=nombreTornillo2.split('.')
         nombreTornillo2= nombreTornillo2[0]
-        print nombreTornillo2
     
         x=0
         c=[]
@@ -210,11 +210,31 @@ class MenuProfesor(ctk.ctkWorkflowWidgetStep) :
         self.pathTornillos = 'C:\Users\Camilo_Q\Documents\GitHub\simuladorTornillosPediculares\simuladorTornillosPedicularesWizard\Modelos\Tornillos/'+self.tornillo_2
         slicer.util.loadModel(self.pathTornillos)
 
-        self.tornillo1 =slicer.util.getNode(nombreTornillo1)
-        self.tornillo1.SetName("Tornillo_1")
+        for i in range(0,20):
 
-        self.tornillo2 =slicer.util.getNode(nombreTornillo2)
-        self.tornillo2.SetName("Tornillo_2")
+            if self.contadorTornillos1==1: self.tornillo1 =slicer.util.getNode(str(nombreTornillo1)+"_"+str(i))
+                
+            if self.contadorTornillos1==0:
+                self.tornillo1 = slicer.util.getNode(str(nombreTornillo1))
+                self.contadorTornillos1=1
+
+            if self.tornillo1 != None:
+                self.contadorTornillos1=0
+                self.tornillo1.SetName("Tornillo_1")
+                break
+
+        for i in range(0,20):
+
+            if self.contadorTornillos2==1: self.tornillo2 =slicer.util.getNode(str(nombreTornillo2)+"_"+str(i))
+                
+            if self.contadorTornillos2==0:
+                self.tornillo2 = slicer.util.getNode(str(nombreTornillo2))
+                self.contadorTornillos2=1
+
+            if self.tornillo2 != None:
+                self.contadorTornillos2=0
+                self.tornillo2.SetName("Tornillo_2")
+                break
                
                
         # Se relaciona la trnasformada con el objeto tornillo
