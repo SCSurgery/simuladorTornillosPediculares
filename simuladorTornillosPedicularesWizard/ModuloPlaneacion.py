@@ -521,11 +521,12 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
         transformadaNode=slicer.util.getNode('Transformada Tornillo 1')
         mt = vtk.vtkMatrix4x4() 
         transformadaNode.GetMatrixTransformToParent(mt)
-        vectortornillo1=[mt.GetElement(0,0),mt.GetElement(0,1),mt.GetElement(0,2),mt.GetElement(0,3),mt.GetElement(1,0),mt.GetElement(1,1),mt.GetElement(1,2),mt.GetElement(1,3),mt.GetElement(2,0),mt.GetElement(2,1),mt.GetElement(2,2),mt.GetElement(2,2)] 
+        vectortornillo1=[mt.GetElement(0,0),mt.GetElement(0,1),mt.GetElement(0,2),mt.GetElement(0,3),mt.GetElement(1,0),mt.GetElement(1,1),mt.GetElement(1,2),mt.GetElement(1,3),mt.GetElement(2,0),mt.GetElement(2,1),mt.GetElement(2,2),mt.GetElement(2,3)] 
+        print mt
         transformadaNode=slicer.util.getNode('Transformada Tornillo 2')
         mt = vtk.vtkMatrix4x4() 
         transformadaNode.GetMatrixTransformToParent(mt)
-        vectortornillo2=[mt.GetElement(0,0),mt.GetElement(0,1),mt.GetElement(0,2),mt.GetElement(0,3),mt.GetElement(1,0),mt.GetElement(1,1),mt.GetElement(1,2),mt.GetElement(1,3),mt.GetElement(2,0),mt.GetElement(2,1),mt.GetElement(2,2),mt.GetElement(2,2)] 
+        vectortornillo2=[mt.GetElement(0,0),mt.GetElement(0,1),mt.GetElement(0,2),mt.GetElement(0,3),mt.GetElement(1,0),mt.GetElement(1,1),mt.GetElement(1,2),mt.GetElement(1,3),mt.GetElement(2,0),mt.GetElement(2,1),mt.GetElement(2,2),mt.GetElement(2,3)] 
         con=mysql.connector.connect(user="root",password="root",host="127.0.0.1",database="basedatos_simulador_ttp") #Se conecta a la base de datos
         cursor=con.cursor()
         add_produto = """UPDATE `basedatos_simulador_ttp`.`estudiantes` SET `Tornillo_1`='%s', `Tornillo_2`='%s', `Transformada_Tornillo1`='%s', `Transformada_Tornilo2`='%s' WHERE `idEstudiantes`='%s'"""% (Tornillo1,Tornillo2,str(vectortornillo1),str(vectortornillo2),int(sys.argv[0]))
