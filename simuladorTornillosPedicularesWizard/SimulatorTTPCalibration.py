@@ -1,13 +1,13 @@
 # -*- coding: UTF-8 -*-
 from __main__ import vtk, qt, ctk, slicer
 
-class HistoriaClinica(ctk.ctkWorkflowWidgetStep) :
+class SimulatorTTPCalibration(ctk.ctkWorkflowWidgetStep) :
 
     def __init__(self, stepid):
         self.initialize(stepid)
         self.nextButtonText = 'Siguiente'
         self.backButtonText = 'Volver'
-        self.setName( '3. Historia clinica del caso'  )
+        self.setName( u'. Calibración'  )
         
     def createUserInterface(self):
 
@@ -19,21 +19,22 @@ class HistoriaClinica(ctk.ctkWorkflowWidgetStep) :
         self.__layout.addRow(self.labelInstruccionesDeUsoBienvenido)
         
     def onEntry(self, comingFrom, transitionType):
-        super(HistoriaClinica, self).onEntry(comingFrom, transitionType)
+        super(SimulatorTTPCalibration, self).onEntry(comingFrom, transitionType)
         self.ctimer = qt.QTimer()
         self.ctimer.singleShot(0, self.killButton)
         slicer.mrmlScene.Clear(0)
         self.cargarScene()
 
     def onExit(self, goingTo, transitionType):
-        super(HistoriaClinica, self).onExit(goingTo, transitionType)
+        super(SimulatorTTPCalibration, self).onExit(goingTo, transitionType)
     
     def validate(self, desiredBranchId):
         validationSuceeded = True
-        super(HistoriaClinica, self).validate(validationSuceeded, desiredBranchId)
+        super(SimulatorTTPCalibration, self).validate(validationSuceeded, desiredBranchId)
         
     def killButton(self):
-    	b2 = slicer.util.findChildren(text='IngresoAlumno' )
+    	
+        b2 = slicer.util.findChildren(text='IngresoAlumno' )
         b3 = slicer.util.findChildren(text='MenuProfesor')
         b4 = slicer.util.findChildren(text='SimulatorTTPCalibration')
         
@@ -42,7 +43,5 @@ class HistoriaClinica(ctk.ctkWorkflowWidgetStep) :
         b4[0].hide()
 
     def cargarScene(self):
-        path2='C:\Users\Camilo_Q\Documents\GitHub\simuladorTornillosPediculares\simuladorTornillosPedicularesWizard\Modelos\Lumbar 2.5 B31s - 4/4 Lumbar  2.5  B31s.nrrd'
-        slicer.util.loadVolume(path2)
-        self.layoutManager = slicer.app.layoutManager() 
-        self.layoutManager.setLayout(27)
+        print "."
+        

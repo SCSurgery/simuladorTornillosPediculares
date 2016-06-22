@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 from __main__ import vtk, qt, ctk, slicer
 import mysql.connector
-
+import os
 class IngresoAlumno(ctk.ctkWorkflowWidgetStep) :
 
     def __init__(self, stepid):
@@ -18,7 +18,12 @@ class IngresoAlumno(ctk.ctkWorkflowWidgetStep) :
         self.__layout = self.__parent.createUserInterface()
         self.__layout = qt.QFormLayout( self )
         loader = qt.QUiLoader()
-        path='C:\Users\Camilo_Q\Documents\GitHub\simuladorTornillosPediculares\Interfaz Grafica\Registro.ui'
+        moduleName = 'simuladorTornillosPediculares'
+        scriptedModulesPath = eval('slicer.modules.%s.path' % moduleName.lower())# devuelve la ruta del .py
+        scriptedModulesPath = os.path.dirname(scriptedModulesPath)# lleva a la carpeta del modulo
+   
+        path = os.path.join(scriptedModulesPath,'Interfaz Grafica', '%s.ui' %self.stepid)
+        #path='C:\Users\Camilo_Q\Documents\GitHub\simuladorTornillosPediculares\Interfaz Grafica\Registro.ui'
         qfile = qt.QFile(path)
         qfile.open(qt.QFile.ReadOnly)
         widget = loader.load(qfile)
@@ -45,16 +50,18 @@ class IngresoAlumno(ctk.ctkWorkflowWidgetStep) :
     def onExit(self, goingTo, transitionType):
         super(IngresoAlumno, self).onExit(goingTo, transitionType)
         
-    
     def validate(self, desiredBranchId):
         validationSuceeded = True
         super(IngresoAlumno, self).validate(validationSuceeded, desiredBranchId)
         
     def killButton(self):
-    	bl = slicer.util.findChildren(text='ModuloPlaneacion' )
-        b2 = slicer.util.findChildren(text='IngresoAlumno' )
-        bl[0].hide()
+    	b2 = slicer.util.findChildren(text='IngresoAlumno' )
+        b3 = slicer.util.findChildren(text='MenuProfesor')
+        b4 = slicer.util.findChildren(text='SimulatorTTPCalibration')
+        
         b2[0].hide()
+        b3[0].hide()
+        b4[0].hide()
 
     def findWidget(self,widget,objectName):
         if widget.objectName == objectName:
@@ -66,7 +73,6 @@ class IngresoAlumno(ctk.ctkWorkflowWidgetStep) :
                 if resulting_widget:
                     return resulting_widget
             return None
-
 
     def onApplyRegistrar(self):
         if (self.name != None)and(self.contra!=None):
@@ -101,6 +107,7 @@ class IngresoAlumno(ctk.ctkWorkflowWidgetStep) :
                             qt.QMessageBox.warning(slicer.util.mainWindow(),'Error Login', u'Registro exitoso')
                         else:
                             qt.QMessageBox.warning(slicer.util.mainWindow(),'Error Login', u'Conexión fallida con la base de datos')
+               
                 elif(self.profesorCheckBox.isChecked()):
                     ingreso=0;
                     profesores = []

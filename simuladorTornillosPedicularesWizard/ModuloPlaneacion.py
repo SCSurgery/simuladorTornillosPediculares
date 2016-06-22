@@ -5,6 +5,7 @@ from os.path import isfile, join
 import numpy,math
 import sys
 import mysql.connector
+import os
 
 class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
 
@@ -52,9 +53,13 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
         self.instruccionesdeUsoFrame.setLayout(self.instruccionesdeUsoFrameLayout)  
         self.instruccionesDeUsoLayout.addRow(self.instruccionesdeUsoFrame)
         self.reiniciarButton = qt.QPushButton("Reiniciar Todo")
+        self.reiniciarButton.toolTip=u"Al presionar este boton comenzará desde el principio la planeación"
         self.reiniciarButton.connect('clicked(bool)',self.onApplyReniciarTodo)
-
+        self.botonGuardar= qt.QPushButton(u'Guardar planeación.')
+        self.botonGuardar.connect('clicked(bool)',self.onApplyGuargar)
+       
         self.instruccionesdeUsoFrameLayout.addWidget(self.reiniciarButton)
+        self.instruccionesdeUsoFrameLayout.addWidget(self.botonGuardar)
 
 #Ubicacion de los tornillos:
         self.ubicacionDeTornillosLayout=qt.QFormLayout(self.botonColapsableUbicacionTornillos)
@@ -64,7 +69,7 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
         self.ubicacionDeTornillosLayoutContenedorTornillo2.setLayout(qt.QHBoxLayout())
 
         self.reglaButton = qt.QPushButton("Regla")
-        self.reglaButton.toolTip= u"Al presionar este boton ubicara en la vista 3d el punto de inseción"
+        self.reglaButton.toolTip= u"Al presionar este boton ubicara en la vista 3d el punto de inseción."
         self.reglaButton.connect('clicked(bool)',self.onApplyRegla)
         self.ubicacionDeTornillosLayout.addRow(self.reglaButton)
 
@@ -120,7 +125,6 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
         self.seleccionTornillo2ComboBox = qt.QComboBox()
         self.seleccionTornillo2ComboBox.currentIndexChanged.connect(self.seleccionTornillo2ComboBoxMoved)
         
-        #self.seleccionTornillo2ComboBox.addItem("")
         self.pathTornillos="C:\Users\Camilo_Q\Documents\GitHub\simuladorTornillosPediculares\simuladorTornillosPedicularesWizard\Modelos\Tornillos"
         self.onlyfiles = [f for f in listdir(self.pathTornillos) if isfile(join(self.pathTornillos, f))] #Lista los archivos que estan dentro del path
         for tornillo in self.onlyfiles: #Muestra en el comboBox de cursos los archivos que estan presentes en el path
@@ -139,7 +143,6 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
         self.manipulacionTornillosLayout=qt.QFormLayout(self.botonColapsableManipulacionTornillos)
         self.manipulacionTornillosLayoutContenedor=qt.QFrame()
         self.manipulacionTornillosLayoutContenedor.setLayout(qt.QHBoxLayout())
-
 
         self.comboBoxSeleccionTornillo = qt.QComboBox() #Se crea comboBox para seleccionar tornillo
         self.comboBoxSeleccionTornillo.addItem("Tornillo 1") #Se añade opciones
@@ -166,10 +169,6 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
         self.fijarTornillos.connect('clicked(bool)',self.onApplyFijarTornillos)
         self.manipulacionTornillosLayout.addRow(self.fijarTornillos)
 
-        self.botonGuardar= qt.QPushButton('Guardar')
-        self.botonGuardar.connect('clicked(bool)',self.onApplyGuargar)
-        self.manipulacionTornillosLayout.addRow(self.botonGuardar)
-
         self.copiar3D()
 
   def onEntry(self, comingFrom, transitionType):
@@ -194,25 +193,40 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
     self.valorSlideTornillo2=0
     self.mostrarplano=0
     self.botonGuardar.setEnabled(False)
+    self.planeacionlista=0
     
   def onExit(self, goingTo, transitionType):
     super(ModuloPlaneacion, self).onExit(goingTo, transitionType)
         
   def validate(self, desiredBranchId):
-    validationSuceeded = True
+    if (self.planeacionlista==1): validationSuceeded = True
+    else: 
+        validationSuceeded = False
+        qt.QMessageBox.warning(slicer.util.mainWindow(),'Error guardar', u'Aún no ha guardado una planeación')
     super(ModuloPlaneacion, self).validate(validationSuceeded, desiredBranchId)
         
   def killButton(self):
-    bl = slicer.util.findChildren(text='ModuloPlaneacion' )
+    
     b2 = slicer.util.findChildren(text='IngresoAlumno' )
-    bl[0].hide()
+    b3 = slicer.util.findChildren(text='MenuProfesor')
+    b4 = slicer.util.findChildren(text='SimulatorTTPCalibration')
+    
     b2[0].hide()
+    b3[0].hide()
+    b4[0].hide()
 
   def cargarScene(self):
+    moduleName = 'simuladorTornillosPediculares'
+    scriptedModulesPath = eval('slicer.modules.%s.path' % moduleName.lower())# devuelve la ruta del .py
+    scriptedModulesPath = os.path.dirname(scriptedModulesPath)# lleva a la carpeta del modulo
+   
+    path2=os.path.join(scriptedModulesPath,'simuladorTornillosPedicularesWizard','Modelos','Lumbar 2.5 B31s - 4/4 Lumbar  2.5  B31s.nrrd')
+    path1=os.path.join(scriptedModulesPath,'simuladorTornillosPedicularesWizard','Modelos','nucleos.stl')
+    path3 = os.path.join(scriptedModulesPath,'simuladorTornillosPedicularesWizard','Modelos','stlcolumna.stl')
 
-    path1='C:\Users\Camilo_Q\Documents\GitHub\simuladorTornillosPediculares\simuladorTornillosPedicularesWizard\Modelos/stlcolumna.stl' #Se obtiene direccion de la unbicación del tornillo
-    path2='C:\Users\Camilo_Q\Documents\GitHub\simuladorTornillosPediculares\simuladorTornillosPedicularesWizard\Modelos\Lumbar 2.5 B31s - 4/4 Lumbar  2.5  B31s.nrrd'
-    path3='C:\Users\Camilo_Q\Documents\GitHub\simuladorTornillosPediculares\simuladorTornillosPedicularesWizard\Modelos/nucleos.stl'
+    #path1='C:\Users\Camilo_Q\Documents\GitHub\simuladorTornillosPediculares\simuladorTornillosPedicularesWizard\Modelos/stlcolumna.stl' #Se obtiene direccion de la unbicación del tornillo
+    #path2='C:\Users\Camilo_Q\Documents\GitHub\simuladorTornillosPediculares\simuladorTornillosPedicularesWizard\Modelos\Lumbar 2.5 B31s - 4/4 Lumbar  2.5  B31s.nrrd'
+    #path3='C:\Users\Camilo_Q\Documents\GitHub\simuladorTornillosPediculares\simuladorTornillosPedicularesWizard\Modelos/nucleos.stl'
     slicer.util.loadModel(path1)
     slicer.util.loadModel(path3)
     slicer.util.loadVolume(path2)
@@ -274,8 +288,8 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
     gNode = gw.sliceLogic()
     gNode.FitSliceToAll() 
 
-
   def iniciarFiducials(self):
+
         self.referenciasTornillo1=slicer.vtkMRMLMarkupsFiducialNode()
         self.referenciasTornillo1.SetName("Fiducials Tornillo 1")
         self.referenciasTornillo2=slicer.vtkMRMLMarkupsFiducialNode()
@@ -285,7 +299,7 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
 
   def onApplyReniciarTodo(self):
         try:
-            selflicer.mrmlScene.RemoveNode(self.tornillo1)
+            slicer.mrmlScene.RemoveNode(self.tornillo1)
         except:
             pass
         a=slicer.util.getNode('Transformada Tornillo 1')
@@ -314,6 +328,7 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
         self.eliminarTornillo1Button.setEnabled(False)
         self.eliminarTornillo2Button.setEnabled(False)
         self.botonColapsableManipulacionTornillos.setEnabled(False)
+        self.botonColapsableUbicacionTornillos.setEnabled(True)
         self.botonGuardar.setEnabled(False)
         self.tornillo1 = None
         self.tornillo2 = None
@@ -321,8 +336,11 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
         self.valorSlideTornillo2=0
         sliceNode = slicer.util.getNode('vtkMRMLSliceNodeGreen')
         sliceNode.SetSliceVisible(False)
-        referencias1.SetLocked(0)
-        referencias2.SetLocked(0)
+        self.valorSlideTornillo1=0
+        self.valorSlideTornillo2=0
+        self.barraTranslacionEjeTornillo.setValue(0)
+        self.planeacionlista=0
+
 
   def onApplyRegla(self):
         
@@ -356,18 +374,26 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
         self.labelInstruccionesDeUsoInstruccion.setText("4. Seleccione el tornillo #2 y carguelo")
 
   def onApplyplanoTornillo1(self):
-
+        moduleName = 'simuladorTornillosPediculares'
+        scriptedModulesPath = eval('slicer.modules.%s.path' % moduleName.lower())# devuelve la ruta del .py
+        scriptedModulesPath = os.path.dirname(scriptedModulesPath)# lleva a la carpeta del modulo
+       
+        path1=os.path.join(scriptedModulesPath,'simuladorTornillosPedicularesWizard','Icons','eyeopen.png')
+        path2=os.path.join(scriptedModulesPath,'simuladorTornillosPedicularesWizard','Icons','eyeclose.png')
         sliceNode = slicer.util.getNode('vtkMRMLSliceNodeGreen')
         if self.clicplanotornillo==0:
-            self.planoTornillo1.setIcon(qt.QIcon('C:\Users\Camilo_Q\Documents\GitHub\simuladorTornillosPediculares\simuladorTornillosPedicularesWizard\Icons\eyeopen.png'))
+            #self.planoTornillo1.setIcon(qt.QIcon('C:\Users\Camilo_Q\Documents\GitHub\simuladorTornillosPediculares\simuladorTornillosPedicularesWizard\Icons\eyeopen.png'))
+            self.planoTornillo1.setIcon(qt.QIcon(path1))
             self.clicplanotornillo=1
-            sliceNode.SetOrientationToReformat()
-            sliceNode.SetSliceVisible(True)
+            
             self.mostrarplano=1
             
             if self.comboBoxSeleccionTornillo.currentIndex == 0:
+                transformadaNode=slicer.util.getNode('Transformada Tornillo 1')
                 self.SetSliceOrigin(sliceNode,self.targetTornillo1)
-                self.SetSliceNormal(sliceNode,self.normalTornillo1)
+                self.SetSliceNormal(sliceNode,self.normalTornillo1,transformadaNode)
+                sliceNode.SetOrientationToReformat()
+                sliceNode.SetSliceVisible(True)
                 
             else:
                 self.SetSliceOrigin(sliceNode,self.targetTornillo2)
@@ -375,7 +401,7 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
 
         else:
             self.clicplanotornillo=0
-            self.planoTornillo1.setIcon(qt.QIcon('C:\Users\Camilo_Q\Documents\GitHub\simuladorTornillosPediculares\simuladorTornillosPedicularesWizard\Icons\eyeclose.png'))
+            self.planoTornillo1.setIcon(qt.QIcon(path2))
             sliceNode.SetSliceVisible(False)
             self.mostrarplano=0
             sliceNode.SetOrientationToCoronal()
@@ -386,7 +412,12 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
         self.anadirTornillo1Button.setEnabled(False)
         self.eliminarTornillo1Button.setEnabled(True)
         self.labelInstruccionesDeUsoInstruccion.setText(u"3. Ubique el segundo punto de inserción")
-        self.pathTornillos = 'C:\Users\Camilo_Q\Documents\GitHub\simuladorTornillosPediculares\simuladorTornillosPedicularesWizard\Modelos\Tornillos/'+self.nombreTornillo1+".STL"
+        moduleName = 'simuladorTornillosPediculares'
+        scriptedModulesPath = eval('slicer.modules.%s.path' % moduleName.lower())# devuelve la ruta del .py
+        scriptedModulesPath = os.path.dirname(scriptedModulesPath)# lleva a la carpeta del modulo
+   
+        self.pathTornillos =os.path.join(scriptedModulesPath,'simuladorTornillosPedicularesWizard','Modelos','Tornillos','%s.STL' %self.nombreTornillo1)
+        #self.pathTornillos = 'C:\Users\Camilo_Q\Documents\GitHub\simuladorTornillosPediculares\simuladorTornillosPedicularesWizard\Modelos\Tornillos/'+self.nombreTornillo1+".STL"
         slicer.util.loadModel(self.pathTornillos)
         referencias=slicer.util.getNode('Fiducials Tornillo 1')
         referencias.SetNthMarkupLabel(0,"target 1")
@@ -435,7 +466,10 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
         self.botonColapsableManipulacionTornillos.setEnabled(True)
         self.labelInstruccionesDeUsoInstruccion.setText("5. Manipule el tornillo #1 e insertelo")
 
-        self.pathTornillos = 'C:\Users\Camilo_Q\Documents\GitHub\simuladorTornillosPediculares\simuladorTornillosPedicularesWizard\Modelos\Tornillos/'+self.nombreTornillo2+".STL"
+        moduleName = 'simuladorTornillosPediculares'
+        scriptedModulesPath = eval('slicer.modules.%s.path' % moduleName.lower())# devuelve la ruta del .py
+        scriptedModulesPath = os.path.dirname(scriptedModulesPath)# lleva a la carpeta del modulo
+        self.pathTornillos =os.path.join(scriptedModulesPath,'simuladorTornillosPedicularesWizard','Modelos','Tornillos','%s.STL' %self.nombreTornillo2)
         slicer.util.loadModel(self.pathTornillos)
 
         referencias=slicer.util.getNode('Fiducials Tornillo 2')
@@ -457,7 +491,6 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
                 self.contadorTornillos2=0
                 self.tornillo2.SetName("Tornillo_2")
                 break
-        self.nombreTornillo2
 
         self.transformadaTornillo2=slicer.vtkMRMLLinearTransformNode() #Se crea una transformada lineal
         self.transformadaTornillo2.SetName('Transformada Tornillo 2') #Se asigna nombre a la transformada
@@ -506,14 +539,20 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
         self.valorSlideTornillo2=0
 
   def onApplyFijarTornillos(self):
+
         referencias1 = slicer.util.getNode("Fiducials Tornillo 1")
         referencias2 = slicer.util.getNode("Fiducials Tornillo 2")
         referencias1.SetLocked(1)
         referencias2.SetLocked(1)
         self.botonColapsableManipulacionTornillos.setEnabled(True)
         self.botonGuardar.setEnabled(True)
+        self.botonColapsableManipulacionTornillos.setEnabled(False)
+        self.botonColapsableUbicacionTornillos.setEnabled(False)
+        self.labelInstruccionesDeUsoInstruccion.setText(u"6. Tornillos fijados, clic en guardar planeación")
         
   def onApplyGuargar(self):
+
+        self.labelInstruccionesDeUsoInstruccion.setText("7. Clic en siguiente para calibrar el equipo")
         vectortornillo1=[]
         vectortornillo2=[]
         Tornillo1=self.seleccionTornillo1ComboBox.currentText
@@ -522,7 +561,6 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
         mt = vtk.vtkMatrix4x4() 
         transformadaNode.GetMatrixTransformToParent(mt)
         vectortornillo1=[mt.GetElement(0,0),mt.GetElement(0,1),mt.GetElement(0,2),mt.GetElement(0,3),mt.GetElement(1,0),mt.GetElement(1,1),mt.GetElement(1,2),mt.GetElement(1,3),mt.GetElement(2,0),mt.GetElement(2,1),mt.GetElement(2,2),mt.GetElement(2,3)] 
-        print mt
         transformadaNode=slicer.util.getNode('Transformada Tornillo 2')
         mt = vtk.vtkMatrix4x4() 
         transformadaNode.GetMatrixTransformToParent(mt)
@@ -533,6 +571,8 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
         cursor.execute(add_produto)
         con.commit()
         con.close()
+        qt.QMessageBox.warning(slicer.util.mainWindow(),'Guardado con exito', u'Su planeación ha sido guardada correctamente')
+        self.planeacionlista=1
 
   def setTransformOrigin(self,target,transformadaNode): #Funcion encargada del desplazamiento
 
@@ -630,12 +670,13 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
     transformada.SetAndObserveMatrixTransformToParent(mt) # Actulizo la matriz con los cambios realizados
 
   def seleccionTornillo1ComboBoxMoved(self):
+
     self.contadorTornillos1=0
     self.nombreTornillo1=str(self.seleccionTornillo1ComboBox.currentText).split('.')
     self.nombreTornillo1=str(self.nombreTornillo1[0])
-    print self.nombreTornillo1  
 
   def seleccionTornillo2ComboBoxMoved(self):
+
     self.contadorTornillos2=0
     self.nombreTornillo2=str(self.seleccionTornillo2ComboBox.currentText).split('.')
     self.nombreTornillo2=str(self.nombreTornillo2[0])
@@ -658,6 +699,7 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
         self.labelInstruccionesDeUsoInstruccion.setText("5. Manipule el tornillo #2 e insertelo")
 
   def onMoveTraslacionEjeTornillo(self):
+
     valorTrasladoSlidex =self.barraTranslacionEjeTornillo.value
     access=numpy.array(numpy.zeros(3)) #Creamos 3 vectores vacios de 3 elemenos
     target=numpy.array(numpy.zeros(3))
@@ -713,7 +755,6 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
       origen[1] = numpy.max((bounds[2],numpy.min((origen[1],bounds[3]))))
       origen[2] = numpy.max((bounds[4],numpy.min((origen[2],bounds[5]))))
 
-      #Asigna la nueva posicion
       sliceNode.GetSliceToRAS().SetElement(0,3,origen[0])
       sliceNode.GetSliceToRAS().SetElement(1,3,origen[1])
       sliceNode.GetSliceToRAS().SetElement(2,3,origen[2])
@@ -778,7 +819,6 @@ class ModuloPlaneacion(ctk.ctkWorkflowWidgetStep) :
         elif qDesktopW.screenCount == 1:
             t.close()
             print "Se desconectó la segunda pantalla"
-
         #Copiar la vista 3D con opciones de configuracion
         o = slicer.qMRMLThreeDWidget()
         o.setWindowTitle('3D')

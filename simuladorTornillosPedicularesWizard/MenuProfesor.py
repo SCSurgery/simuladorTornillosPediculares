@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 from __main__ import vtk, qt, ctk, slicer
 import mysql.connector
-
+import os
 class MenuProfesor(ctk.ctkWorkflowWidgetStep) :
 
     def __init__(self, stepid):
@@ -18,6 +18,11 @@ class MenuProfesor(ctk.ctkWorkflowWidgetStep) :
         self.__layout = qt.QFormLayout( self )
         loader = qt.QUiLoader()
         path='C:\Users\Camilo_Q\Documents\GitHub\simuladorTornillosPediculares\Interfaz Grafica\MenuProfesor.ui'
+        moduleName = 'simuladorTornillosPediculares'
+        scriptedModulesPath = eval('slicer.modules.%s.path' % moduleName.lower())# devuelve la ruta del .py
+        scriptedModulesPath = os.path.dirname(scriptedModulesPath)# lleva a la carpeta del modulo
+   
+        path = os.path.join(scriptedModulesPath,'Interfaz Grafica', '%s.ui' %self.stepid)
         qfile = qt.QFile(path)
         qfile.open(qt.QFile.ReadOnly)
         widget = loader.load(qfile)
@@ -50,8 +55,6 @@ class MenuProfesor(ctk.ctkWorkflowWidgetStep) :
         self.contadorTornillos2=0
         self.tornillo1=None
 
-
-
     def onExit(self, goingTo, transitionType):
         super(MenuProfesor, self).onExit(goingTo, transitionType)
     
@@ -60,16 +63,55 @@ class MenuProfesor(ctk.ctkWorkflowWidgetStep) :
         super(MenuProfesor, self).validate(validationSuceeded, desiredBranchId)
         
     def killButton(self):
-    	bl = slicer.util.findChildren(text='ModuloPlaneacion' )
-        b2 = slicer.util.findChildren(text='IngresoAlumno' )
+    	b2 = slicer.util.findChildren(text='IngresoAlumno' )
         b3 = slicer.util.findChildren(text='MenuProfesor')
-        bl[0].hide()
+        b4 = slicer.util.findChildren(text='SimulatorTTPCalibration')
+        
         b2[0].hide()
         b3[0].hide()
+        b4[0].hide()
 
     def cargarScene(self):
+
+        slicer.mrmlScene.Clear(0)
         self.layoutManager = slicer.app.layoutManager() 
-        self.layoutManager.setLayout(3)
+        self.layoutManager.setLayout(1)
+        self.layoutManager = slicer.app.layoutManager() 
+        threeDWidget = self.layoutManager.threeDWidget(0)
+        self.threeDView = threeDWidget.threeDView()
+        self.threeDView.resetFocalPoint()
+        
+        cameraNode=slicer.util.getNode('*Camera*') 
+        camera=cameraNode.GetCamera() 
+        camera.SetPosition(-5.92673, -98.1958, -1116.53)
+        camera.SetViewUp(-0.00203823, -0.0605367, 0.998164)
+        camera.SetFocalPoint(19, 91, -1105)
+        camera.SetViewAngle(30) 
+        cameraNode.ResetClippingRange() 
+        slicer.util.resetSliceViews()
+        
+        sliceNode = slicer.util.getNode('vtkMRMLSliceNodeRed')
+        sliceNode.SetOrientationToReformat()
+        mtslide = vtk.vtkMatrix4x4()
+        mtslide.SetElement(0,0,0.550523)
+        mtslide.SetElement(0,1,0)
+        mtslide.SetElement(0,2,0)
+        mtslide.SetElement(0,3,-82.5784)
+        mtslide.SetElement(1,0,0)
+        mtslide.SetElement(1,1,0.550523)
+        mtslide.SetElement(1,2,0)
+        mtslide.SetElement(0,3,-79)
+        mtslide.SetElement(2,0,0)
+        mtslide.SetElement(2,1,0)
+        mtslide.SetElement(2,2,1.4002)
+        mtslide.SetElement(0,3,0)
+
+        sliceNode.SetSliceToRAS(mtslide)
+
+        self.layoutManager= slicer.app.layoutManager()
+        gw = self.layoutManager.sliceWidget('Red')
+        gNode = gw.sliceLogic()
+        gNode.FitSliceToAll() 
 
     def findWidget(self,widget,objectName):
         if widget.objectName == objectName:
@@ -173,41 +215,73 @@ class MenuProfesor(ctk.ctkWorkflowWidgetStep) :
         mt2.SetElement(3,2,0)
         mt2.SetElement(3,3,1)
 
-        path1='C:\Users\Camilo_Q\Documents\GitHub\simuladorTornillosPediculares\simuladorTornillosPedicularesWizard\Modelos/stlcolumna.stl' #Se obtiene direccion de la unbicación del tornillo
-        path2='C:\Users\Camilo_Q\Documents\GitHub\simuladorTornillosPediculares\simuladorTornillosPedicularesWizard\Modelos\Lumbar 2.5 B31s - 4/4 Lumbar  2.5  B31s.nrrd'
-        path3='C:\Users\Camilo_Q\Documents\GitHub\simuladorTornillosPediculares\simuladorTornillosPedicularesWizard\Modelos/nucleos.stl'
-        slicer.util.loadModel(path1)
-        slicer.util.loadModel(path3)
-        slicer.util.loadVolume(path2)
+        moduleName = 'simuladorTornillosPediculares'
+        scriptedModulesPath = eval('slicer.modules.%s.path' % moduleName.lower())# devuelve la ruta del .py
+        scriptedModulesPath = os.path.dirname(scriptedModulesPath)# lleva a la carpeta del modulo
+   
+        path2=os.path.join(scriptedModulesPath,'simuladorTornillosPedicularesWizard','Modelos','Lumbar 2.5 B31s - 4/4 Lumbar  2.5  B31s.nrrd')
+        path1=os.path.join(scriptedModulesPath,'simuladorTornillosPedicularesWizard','Modelos','nucleos.stl')
+        path3 = os.path.join(scriptedModulesPath,'simuladorTornillosPedicularesWizard','Modelos','stlcolumna.stl')
 
+        #path1='C:\Users\Camilo_Q\Documents\GitHub\simuladorTornillosPediculares\simuladorTornillosPedicularesWizard\Modelos/stlcolumna.stl' #Se obtiene direccion de la unbicación del tornillo
+        #path2='C:\Users\Camilo_Q\Documents\GitHub\simuladorTornillosPediculares\simuladorTornillosPedicularesWizard\Modelos\Lumbar 2.5 B31s - 4/4 Lumbar  2.5  B31s.nrrd'
+        #path3='C:\Users\Camilo_Q\Documents\GitHub\simuladorTornillosPediculares\simuladorTornillosPedicularesWizard\Modelos/nucleos.stl'
+        
         columna=slicer.util.getNode('stlcolumna') # Se obtiene el nodo del objeto en escena
-        nucleo=slicer.util.getNode('nucleos')
-        nucleoModelDisplayNode = nucleo.GetDisplayNode()
-        nucleoModelDisplayNode.SetColor(0.729411,0.7529411,0.8745098)
-        nucleoModelDisplayNode.SetAmbient(0.10)
-        nucleoModelDisplayNode.SetDiffuse(0.90)
-        nucleoModelDisplayNode.SetSpecular(0.20)
-        nucleoModelDisplayNode.SetPower(10)
-        nucleoModelDisplayNode.SetSliceIntersectionVisibility(1)
+        if (columna==None):
 
-        columnaModelDisplayNode = columna.GetDisplayNode() 
+            slicer.util.loadModel(path1)
+            slicer.util.loadModel(path3)
+            slicer.util.loadVolume(path2)
+            columna=slicer.util.getNode('stlcolumna')
+            nucleo=slicer.util.getNode('nucleos')
+            nucleoModelDisplayNode = nucleo.GetDisplayNode()
+            nucleoModelDisplayNode.SetColor(0.729411,0.7529411,0.8745098)
+            nucleoModelDisplayNode.SetAmbient(0.10)
+            nucleoModelDisplayNode.SetDiffuse(0.90)
+            nucleoModelDisplayNode.SetSpecular(0.20)
+            nucleoModelDisplayNode.SetPower(10)
+            nucleoModelDisplayNode.SetSliceIntersectionVisibility(1)
 
-        columnaModelDisplayNode.SetColor(0.9451,0.8392,0.5686) #Colores parametrizados sobre 255
-        columnaModelDisplayNode.SetSliceIntersectionVisibility(1)
-        columnaModelDisplayNode.SetAmbient(0.33)
-        columnaModelDisplayNode.SetDiffuse(0.78)
-        columnaModelDisplayNode.SetSpecular(0.13)
-        columnaModelDisplayNode.SetPower(15.5)
+            columnaModelDisplayNode = columna.GetDisplayNode() 
+
+            columnaModelDisplayNode.SetColor(0.9451,0.8392,0.5686) #Colores parametrizados sobre 255
+            columnaModelDisplayNode.SetSliceIntersectionVisibility(1)
+            columnaModelDisplayNode.SetAmbient(0.33)
+            columnaModelDisplayNode.SetDiffuse(0.78)
+            columnaModelDisplayNode.SetSpecular(0.13)
+            columnaModelDisplayNode.SetPower(15.5)
+
         self.layoutManager = slicer.app.layoutManager() 
         threeDWidget = self.layoutManager.threeDWidget(0)
         self.threeDView = threeDWidget.threeDView()
         self.threeDView.resetFocalPoint()
-        self.layoutManager.setLayout(1)
 
-        self.pathTornillos = 'C:\Users\Camilo_Q\Documents\GitHub\simuladorTornillosPediculares\simuladorTornillosPedicularesWizard\Modelos\Tornillos/'+self.tornillo_1
+        try:
+            slicer.mrmlScene.RemoveNode(self.tornillo1)
+        except:
+            pass
+        try:
+            slicer.mrmlScene.RemoveNode(self.tornillo2)
+        except:
+            pass
+        a=slicer.util.getNode('Transformada Tornillo 1')
+        try:
+            slicer.mrmlScene.RemoveNode(a)
+        except:
+            pass
+        a=slicer.util.getNode('Transformada Tornillo 2')
+        try:
+            slicer.mrmlScene.RemoveNode(a)
+        except:
+            pass
+       
+        self.pathTornillos =os.path.join(scriptedModulesPath,'simuladorTornillosPedicularesWizard','Modelos','Tornillos','%s' %self.tornillo_1  )
+        #self.pathTornillos = 'C:\Users\Camilo_Q\Documents\GitHub\simuladorTornillosPediculares\simuladorTornillosPedicularesWizard\Modelos\Tornillos/'+self.tornillo_1          
         slicer.util.loadModel(self.pathTornillos)
 
-        self.pathTornillos = 'C:\Users\Camilo_Q\Documents\GitHub\simuladorTornillosPediculares\simuladorTornillosPedicularesWizard\Modelos\Tornillos/'+self.tornillo_2
+        self.pathTornillos =os.path.join(scriptedModulesPath,'simuladorTornillosPedicularesWizard','Modelos','Tornillos','%s' %self.tornillo_2)
+        #self.pathTornillos = 'C:\Users\Camilo_Q\Documents\GitHub\simuladorTornillosPediculares\simuladorTornillosPedicularesWizard\Modelos\Tornillos/'+self.tornillo_2
         slicer.util.loadModel(self.pathTornillos)
 
         for i in range(0,20):
@@ -234,11 +308,8 @@ class MenuProfesor(ctk.ctkWorkflowWidgetStep) :
             if self.tornillo2 != None:
                 self.contadorTornillos2=0
                 self.tornillo2.SetName("Tornillo_2")
-                break
-               
-               
-        # Se relaciona la trnasformada con el objeto tornillo
-       
+                break   
+            
         tornilloModelDisplayNode = self.tornillo1.GetDisplayNode() 
         tornilloModelDisplayNode.SetColor(0.847059,0.847059,0.847059)
         tornilloModelDisplayNode.SetAmbient(0.10)
@@ -252,9 +323,7 @@ class MenuProfesor(ctk.ctkWorkflowWidgetStep) :
         slicer.mrmlScene.AddNode(self.transformadaTornillo1) #
         self.tornillo1.SetAndObserveTransformNodeID(self.transformadaTornillo1.GetID())
         self.transformadaTornillo1.SetAndObserveMatrixTransformToParent(mt1)
-               
-        # Se relaciona la trnasformada con el objeto tornillo
-       
+
         tornilloModelDisplayNode = self.tornillo2.GetDisplayNode() 
         tornilloModelDisplayNode.SetColor(0.847059,0.847059,0.847059)
         tornilloModelDisplayNode.SetAmbient(0.10)

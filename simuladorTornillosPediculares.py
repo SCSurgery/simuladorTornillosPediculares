@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 from __main__ import vtk, qt, ctk, slicer
+import os
 
 import simuladorTornillosPedicularesWizard
 
@@ -38,6 +39,7 @@ class simuladorTornillosPedicularesWidget:
     self.StepHistoriaClinica=simuladorTornillosPedicularesWizard.HistoriaClinica('HistoriaClinica')
     self.StepModuloPlaneacion=simuladorTornillosPedicularesWizard.ModuloPlaneacion('ModuloPlaneacion')
     self.StepMenuProfesor=simuladorTornillosPedicularesWizard.MenuProfesor('MenuProfesor')
+    self.StepCalibracion=simuladorTornillosPedicularesWizard.SimulatorTTPCalibration('SimulatorTTPCalibration')
 
     steps = [] #Se crea tupla que contenga los pasos del flujo de trabajo
     #Se añade a la tupla cada uno de los pasos del flujo de trabajo
@@ -53,6 +55,7 @@ class simuladorTornillosPedicularesWidget:
     self.workflow.addTransition(self.StepInicio, self.StepHistoriaClinica,'2', ctk.ctkWorkflow.Bidirectional )
     self.workflow.addTransition(self.StepInicio, self.StepMenuProfesor,'3', ctk.ctkWorkflow.Bidirectional )
     self.workflow.addTransition(self.StepHistoriaClinica, self.StepModuloPlaneacion)
+    self.workflow.addTransition(self.StepModuloPlaneacion,self.StepCalibracion)
 
     self.workflow.start()
     workflowWidget.visible = True
